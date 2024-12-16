@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [boards, setBoards] = useState<Board[]>([]);
   const [newBoardName, setNewBoardName] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleListOpen = (id: string) => {
     navigate(`/board-details/${id}`);
@@ -38,6 +39,7 @@ const Dashboard: React.FC = () => {
       await createBoard(newBoardName);
       toast.success('Board created successfully!');
       setNewBoardName('');
+      setIsModalOpen(false);
       fetchBoards();
     } catch (error) {
       toast.error('Error creating board: ' + (error as Error).message);
@@ -61,25 +63,6 @@ const Dashboard: React.FC = () => {
   return (
     <div className="p-6 bg-gray-800 min-h-screen text-white">
       <ToastContainer />
-      {/* New Board Section */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-3">Create a New Board</h2>
-        <div className="flex gap-3">
-          <input
-            type="text"
-            placeholder="Enter board name"
-            value={newBoardName}
-            onChange={(e) => setNewBoardName(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
-          />
-          <button
-            onClick={handleCreateBoard}
-            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md font-semibold"
-          >
-            Create Board
-          </button>
-        </div>
-      </div>
 
       {/* Boards Display */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -87,7 +70,7 @@ const Dashboard: React.FC = () => {
           <div
             key={board.id}
             onClick={() => handleListOpen(board.id)}
-            className="cursor-pointer"
+            className="cursor-pointer  "
           >
             <BoardCard
               board={board}
@@ -97,10 +80,43 @@ const Dashboard: React.FC = () => {
         ))}
 
         {/* Placeholder Create Board Card */}
-        <div className="bg-gray-800 rounded-md h-32 flex items-center justify-center text-gray-300 text-lg font-semibold hover:bg-gray-700 cursor-pointer transition duration-300">
-          Create new board
+        <div
+          onClick={() => setIsModalOpen(true)}
+          className="bg-gray-800 rounded-md h-32 flex items-center justify-center text-gray-300 text-lg font-semibold hover:bg-gray-700 cursor-pointer transition duration-300"
+        >
+          Add New Board
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-6 rounded-lg shadow-lg text-white w-96">
+            <h2 className="text-2xl font-bold mb-4">Create a New Board</h2>
+            <input
+              type="text"
+              placeholder="Enter board name"
+              value={newBoardName}
+              onChange={(e) => setNewBoardName(e.target.value)}
+              className="w-full px-4 py-2 mb-4 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateBoard}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-md font-semibold"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

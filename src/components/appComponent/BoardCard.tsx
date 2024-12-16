@@ -18,7 +18,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board, onDelete }) => {
   return (
     <div
       ref={dragRef}
-      className={`relative p-5 rounded-md shadow-lg bg-blue-600 text-white hover:shadow-xl transition duration-300 ${
+      className={`relative p-5 py-12 text-center rounded-md shadow-lg bg-blue-600 text-white hover:shadow-xl transition duration-300 ${
         isDragging ? 'opacity-50' : 'opacity-100'
       }`}
     >
