@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { getLists } from "../api/trelloApi";
 import Sidebar from "../components/appComponent/Sidebar";
-import BoardCardsList from "./boardCardsList";
+import BoardCardsList from "./BoardCardsList";
 
 interface ListItemType {
   id: string;
