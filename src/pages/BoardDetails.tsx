@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { getLists } from "../api/trelloApi";
 import Sidebar from "../components/appComponent/Sidebar";
+import BoardCardsList from "./boardCardsList";
 
 interface ListItemType {
   id: string;
@@ -10,24 +11,24 @@ interface ListItemType {
 
 const BoardDetails: React.FC = () => {
   const { id } = useParams<{ id: any }>();
-  const [list, setList] = useState<ListItemType[]>([]);
+  const [lists, setLists] = useState<ListItemType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  
   useEffect(() => {
-    const fetchList = async () => {
+    const fetchListsAndCards = async () => {
       setLoading(true);
       try {
         const response = await getLists(id);
-        setList(response.data);
+        setLists(response.data);
       } catch (error) {
-        console.error("Error fetching list:", error);
+        console.error("Error fetching lists and cards:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (id) {
-      fetchList();
+      fetchListsAndCards();
     }
   }, [id]);
 
@@ -40,26 +41,27 @@ const BoardDetails: React.FC = () => {
 
       {/* Main Content */}
       <div className="ml-64 p-5 w-full">
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="max-w-6xl mx-auto p-4">
           <h1 className="text-3xl font-bold mb-4">Board Details</h1>
 
           {loading ? (
-            <div className="flex justify-center items-center h-52">
+            <div className="flex flex-col items-center h-52">
               <div className="animate-spin h-12 w-12 border-t-2 border-blue-500 border-solid rounded-full"></div>
             </div>
           ) : (
-            <div>
-              {list.length > 0 ? (
-                <ul>
-                  {list.map((item) => (
-                    <li
-                      key={item.id}
-                      className="p-4 border border-gray-200 rounded-md shadow-sm mb-3 hover:shadow-md transition duration-300"
-                    >
-                      <p className="text-lg font-semibold text-gray-700">{item.name}</p>
-                    </li>
-                  ))}
-                </ul>
+            <div className="flex flex-row gap-4 bg-gray-200">
+              {lists.length > 0 ? (
+                lists.map((list) => (
+                  <div
+                    key={list.id}
+                    className="flex flex-col p-4 border border-gray-300 rounded-md shadow-sm w-1/3 bg-white"
+                  >
+                    <p className="text-lg font-semibold text-gray-700 mb-2">
+                      {list.name}
+                    </p>
+                    <BoardCardsList itemId={list.id} />
+                  </div>
+                ))
               ) : (
                 <p className="text-gray-500">No lists found</p>
               )}
