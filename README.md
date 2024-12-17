@@ -20,5 +20,32 @@ Move cards between lists using:
 
 ---
 
-###deployed link
+## 🛠️ Project Structure
+```
+src/
+├── api/
+│   └── trelloApi.ts       # API functions for boards, lists, and cards
+├── components/
+│   ├── Sidebar.tsx        # Sidebar component
+│   └── BoardCardsList.tsx # List and Cards display
+├── pages/
+│   └── BoardDetails.tsx   # Board details page
+├── utils/
+│   └── TrelloAxios.ts     # Axios instance configuration
+└── App.tsx                # Main app component
+
+```
+
+## 👨‍💻 Contributors
+self:-Pooja Singh
+
+
+## 🎉 Future Improvements
+- Real-time updates using WebSockets.
+- Authentication for user-specific boards.
+- Better error handling for API failures.
+
+  
+## 🌐 Deployed Link
 https://task-manager-trello-weld.vercel.app/
+
