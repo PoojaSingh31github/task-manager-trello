@@ -1,5 +1,6 @@
-import { getCards, createCard } from "../api/trelloApi";
 import React, { useEffect, useState } from "react";
+import { getCards, createCard } from "../api/trelloApi";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 interface CardItem {
   id: string;
@@ -39,6 +40,16 @@ const BoardCardsList: React.FC<BoardCardsListProps> = ({ itemId }) => {
     }
   };
 
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const reorderedCards = Array.from(cards);
+    const [removed] = reorderedCards.splice(result.source.index, 1);
+    reorderedCards.splice(result.destination.index, 0, removed);
+
+    setCards(reorderedCards); // Update cards after drag
+  };
+
   useEffect(() => {
     if (itemId) {
       fetchCards();
@@ -46,25 +57,44 @@ const BoardCardsList: React.FC<BoardCardsListProps> = ({ itemId }) => {
   }, [itemId]);
 
   return (
-    <div>
-      {/* Cards Section */}
-      {loading ? (
-        <p className="text-gray-400 text-sm italic">Loading cards...</p>
-      ) : cards.length > 0 ? (
-        <ul className="space-y-2">
-          {cards.map((card) => (
-            <li
-              key={card.id}
-              className="p-3 bg-gray-800 text-white rounded-md shadow-sm flex justify-between items-center"
-            >
-              <span>{card.name}</span>
-              <button className="text-gray-400 hover:text-white">⋮</button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500 text-sm">No cards found</p>
-      )}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId={itemId} type="CARD">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            {/* Cards Section */}
+            {loading ? (
+              <p className="text-gray-400 text-sm italic">Loading cards...</p>
+            ) : cards.length > 0 ? (
+              <ul className="space-y-2">
+                {cards.map((card, index) => (
+                  <Draggable
+                    key={card.id}
+                    draggableId={card.id}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <li
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="p-3 bg-gray-800 text-white rounded-md shadow-sm flex justify-between items-center"
+                      >
+                        <span>{card.name}</span>
+                        <button className="text-gray-400 hover:text-white">
+                          ⋮
+                        </button>
+                      </li>
+                    )}
+                  </Draggable>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 text-sm">No cards found</p>
+            )}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
 
       {/* Add New Task Section */}
       <div className="mt-3">
@@ -80,11 +110,11 @@ const BoardCardsList: React.FC<BoardCardsListProps> = ({ itemId }) => {
             className="text-gray-300 hover:text-white"
             onClick={addNewTask}
           >
-            + Add a card
+            + Add new Task
           </button>
         </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 };
 
